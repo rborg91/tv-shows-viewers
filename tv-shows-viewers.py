@@ -110,23 +110,23 @@ df.to_csv(csv_file, index=False)
 print(f"All data has now been saved to {csv_file}")
 
 average_viewership_byshow = df.groupby("Show")["US viewers (millions)"].mean()
-average_viewership_byshow.to_csv("output/dataframes/average_viewership_byshow.csv")
+average_viewership_byshow.to_csv("output/dataframes/average-viewership-byshow.csv")
 
 average_viewership_byseason = df.groupby(["Show", "Season"])["US viewers (millions)"].mean()
-average_viewership_byseason.to_csv("output/dataframes/average_viewership_byseason.csv")
+average_viewership_byseason.to_csv("output/dataframes/average-viewership-byseason.csv")
 
 max_viewership_byshow = df.groupby("Show")["US viewers (millions)"].max()
-max_viewership_byshow.to_csv("output/dataframes/max_viewership_byshow.csv")
+max_viewership_byshow.to_csv("output/dataframes/max-viewership-byshow.csv")
 
 min_viewership_byshow = df.groupby("Show")["US viewers (millions)"].min()
-min_viewership_byshow.to_csv("output/dataframes/min_viewership_byshow.csv")
+min_viewership_byshow.to_csv("output/dataframes/min-viewership-byshow.csv")
 
 # plot heatmap of The Sopranos viewership
 sopranos = df[df['Show'] == 'The Sopranos']
 sopranos = sopranos[['Season', 'No in Season', 'US viewers (millions)']]
 sopranos = sopranos.pivot(index='Season', columns='No in Season', values='US viewers (millions)')
 fig, ax = plt.subplots(figsize=(15, 10))
-sns.heatmap(sopranos, annot=True, fmt=".1f", linewidths=.5, ax=ax, cmap='RdYlGn')
+sns.heatmap(sopranos, annot=True, fmt=".1f", linewidths=.5, ax=ax, cmap='RdYlGn', cbar=False)
 plt.title('The Sopranos Viewership - US viewers (millions)')
 plt.savefig('output/visualisations/sopranos-heatmap.png')
 
@@ -135,7 +135,7 @@ got = df[df['Show'] == 'Game of Thrones']
 got = got[['Season', 'No in Season', 'US viewers (millions)']]
 got = got.pivot(index='Season', columns='No in Season', values='US viewers (millions)')
 fig, ax = plt.subplots(figsize=(15, 10))
-sns.heatmap(got, annot=True, fmt=".1f", linewidths=.5, ax=ax, cmap='RdYlGn')
+sns.heatmap(got, annot=True, fmt=".1f", linewidths=.5, ax=ax, cmap='RdYlGn', cbar=False)
 plt.title('Game of Thrones Viewership - US viewers (millions)')
 plt.savefig('output/visualisations/got-heatmap.png')
 
@@ -144,12 +144,12 @@ bb = df[df['Show'] == 'Breaking Bad']
 bb = bb[['Season', 'No in Season', 'US viewers (millions)']]
 bb = bb.pivot(index='Season', columns='No in Season', values='US viewers (millions)')
 fig, ax = plt.subplots(figsize=(15, 10))
-sns.heatmap(bb, annot=True, fmt=".1f", linewidths=.5, ax=ax, cmap='RdYlGn')
+sns.heatmap(bb, annot=True, fmt=".1f", linewidths=.5, ax=ax, cmap='RdYlGn', cbar=False)
 plt.title('Breaking Bad Viewership - US viewers (millions)')
 plt.savefig('output/visualisations/breakingbad-heatmap.png')
 
 #plot line chart of average viewership by season
-average_viewership_byseason = pd.read_csv("output/dataframes/average_viewership_byseason.csv")
+average_viewership_byseason = pd.read_csv("output/dataframes/average-viewership-byseason.csv")
 fig, ax = plt.subplots(figsize=(15, 10))
 sns.lineplot(data=average_viewership_byseason, x='Season', y='US viewers (millions)', hue='Show', ax=ax)
 plt.title('Average Viewership by Season', fontsize=14)
@@ -161,5 +161,19 @@ plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
 plt.savefig('output/visualisations/average-viewership-byseason.png')
 
-#TO DO: Add stacked bar chart for viewerships by show (mean, max, min)
+#Add stacked bar chart for viewerships by show (mean, max, min)
+average_viewership = pd.read_csv('output/dataframes/average-viewership-byshow.csv')
+max_viewership = pd.read_csv('output/dataframes/max-viewership-byshow.csv')
+min_viewership = pd.read_csv('output/dataframes/min-viewership-byshow.csv')
+fig, ax = plt.subplots()
+max_viewership.set_index('Show').plot(kind='bar', ax=ax, color='r')
+average_viewership.set_index('Show').plot(kind='bar', ax=ax, color='b')
+min_viewership.set_index('Show').plot(kind='bar', ax=ax, color='g')
+plt.xlabel('Show', fontsize=14)
+plt.ylabel('US Viewers (Millions)', fontsize=14)
+plt.title('Viewership by Show', fontsize=16)
+ax.set_xticklabels(max_viewership['Show'], rotation=0)
+plt.legend(['Max Viewership', 'Average Viewership', 'Min Viewership'])
+plt.savefig('output/visualisations/average-max-min-viewership-byshow.png')
+
 #TO DO: Tidy up script and create functions as needed
