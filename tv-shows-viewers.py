@@ -168,7 +168,9 @@ def plot_heatmap(df, show):
     show_df = show_df.pivot(index='Season', columns='No in Season', values='US viewers (millions)')
     fig, ax = plt.subplots(figsize=(15, 10))
     sns.heatmap(show_df, annot=True, fmt=".1f", linewidths=.5, ax=ax, cmap='RdYlGn', cbar=False)
-    plt.title(f'{show} Viewership - US viewers (millions)')
+    plt.title(f'{show} Viewership - US viewers (millions)', fontsize=20)
+    plt.xlabel('Episode Number', fontsize=16)
+    plt.ylabel('Season', fontsize=16)
     plt.savefig(f'output/visualisations/{show.lower().replace(" ", "")}-heatmap.png')
 
 def plot_line_chart():
@@ -187,7 +189,7 @@ def plot_line_chart():
     average_viewership_byseason = pd.read_csv("output/dataframes/average-viewership-byseason.csv")
     fig, ax = plt.subplots(figsize=(15, 10))
     sns.lineplot(data=average_viewership_byseason, x='Season', y='US viewers (millions)', hue='Show', ax=ax)
-    plt.title('Average Viewership by Season', fontsize=14)
+    plt.title('Average Viewership by Season', fontsize=20)
     plt.xlabel('Season', fontsize=16)
     plt.ylabel('Average Viewership (millions)', fontsize=16)
     plt.setp(ax.lines, linewidth=5)
@@ -221,20 +223,31 @@ def plot_stacked_bar_chart():
 
     Note:
     - The CSV files should have a column named 'Show' containing the names of the TV shows.
-    - The function uses the pandas and matplotlib libraries.
+    - The function uses the pandas and seaborn libraries.
     """
-    average_viewership = pd.read_csv('output/dataframes/average-viewership-byshow.csv')
     max_viewership = pd.read_csv('output/dataframes/max-viewership-byshow.csv')
+    average_viewership = pd.read_csv('output/dataframes/average-viewership-byshow.csv')
     min_viewership = pd.read_csv('output/dataframes/min-viewership-byshow.csv')
-    fig, ax = plt.subplots()
-    max_viewership.set_index('Show').plot(kind='bar', ax=ax, color='r')
-    average_viewership.set_index('Show').plot(kind='bar', ax=ax, color='b')
-    min_viewership.set_index('Show').plot(kind='bar', ax=ax, color='g')
-    plt.xlabel('Show', fontsize=14)
-    plt.ylabel('US Viewers (Millions)', fontsize=14)
-    plt.title('Viewership by Show', fontsize=16)
-    ax.set_xticklabels(max_viewership['Show'], rotation=0)
-    plt.legend(['Max Viewership', 'Average Viewership', 'Min Viewership'])
+
+    df = pd.DataFrame({
+        'Show': average_viewership['Show'],
+        'Max Viewership': max_viewership['US viewers (millions)'],
+        'Average Viewership': average_viewership['US viewers (millions)'],
+        'Min Viewership': min_viewership['US viewers (millions)']
+    })
+
+    df_melted = df.melt(id_vars='Show', var_name='Metric', value_name='US Viewers (Millions)')
+
+    plt.figure(figsize=(15, 10))
+    custom_colours = {'Max Viewership': 'green', 'Average Viewership': 'orange', 'Min Viewership': 'red'}
+    sns.barplot(data=df_melted, x='Show', y='US Viewers (Millions)', hue='Metric', dodge=False, palette=custom_colours)
+    plt.xlabel('Show', fontsize=16)
+    plt.ylabel('US Viewers (Millions)', fontsize=16)
+    plt.title('Viewership by Show', fontsize=20)
+    order = ['Max Viewership', 'Average Viewership', 'Min Viewership']
+    handles, labels = plt.gca().get_legend_handles_labels()
+    ordered_handles = [handles[labels.index(metric)] for metric in order]
+    plt.legend(ordered_handles, order, title='Metric')
     plt.savefig('output/visualisations/average-max-min-viewership-byshow.png')
 
 def main():
@@ -264,5 +277,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-#TO DO: Tidy up visualisations and make them consistent
