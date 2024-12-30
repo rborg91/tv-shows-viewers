@@ -20,3 +20,17 @@ The repository is set-up to use [Poetry](https://python-poetry.org/) for depende
 
     poetry install
     poetry run python tv-shows-viewers.py
+
+## Examples of visualisations
+
+### Heatmap
+
+**The Sopranos** - U.S. Viewership during initial airings
+
+![sopranos_heatmap](output/visualisations/thesopranos-heatmap.png)
+
+### Line Graph
+
+**Various TV Shows** - Average U.S. Viewership by Season
+
+![sopranos_heatmap](output/visualisations/average-viewership-byseason.png)
